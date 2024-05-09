@@ -48,7 +48,7 @@ def get_camera():
     has_frame, _ = cap.read()
     if has_frame is None:
         raise ValueError('No Camera')
-    
+
     return cap
 
 
@@ -231,7 +231,7 @@ def perform_facial_recognition(
             w=w,
             h=h,
         )
-    
+
     # pass through func without changing img when is_verify is False
     return img, target_path if is_verify else None, distance[most_similar_index]
 

@@ -48,7 +48,7 @@ class Logger:
 
     def debug(self, msg, *args, **kwargs):
         self.logger.debug(msg, *args, **kwargs)
-    
+
     def info(self, msg, *args, **kwargs):
         self.logger.info(msg, *args, **kwargs)
 

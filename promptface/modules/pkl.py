@@ -283,7 +283,7 @@ def init_pkl(
         toc = time.time()
         logger.info("Initialization complete")
         logger.info(f"find function duration {toc - tic} seconds")
-    
+
     # post-processing
     representations = __find_missing_value(representations)
     representations = sorted(representations, key=operator.itemgetter('identity'))
