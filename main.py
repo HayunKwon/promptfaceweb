@@ -9,7 +9,7 @@ import cv2  # for imshow, waitKey, destroyAllWindows
 from deepface import DeepFace   # for build_model
 
 # project dependencies
-from promptface.utils.constants import MODEL_NAME, INFO_FORMAT
+from promptface.utils.constants import DB_PATH, MODEL_NAME, INFO_FORMAT
 from promptface.utils.logger import Logger
 from promptface.utils.folder_utils import createDirectory
 from promptface.modules.pkl import load_pkl
@@ -19,6 +19,7 @@ from promptface.modules.streaming import get_camera, process
 # ----- INIT -----
 try:
     # set logger
+    createDirectory(DB_PATH)
     createDirectory('Logs')
     logger = Logger(__name__)
     logger.info(INFO_FORMAT.format('APP START'))
