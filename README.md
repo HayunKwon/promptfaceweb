@@ -1,6 +1,29 @@
 # promptface
 custom deepface(v0.0.91) fork repo
 
+## How to use
+
+You can use the promptface by running main.py , because it's basically taking the deepface.modules.streaming.analysis method out as the main.
+
+There is an example of a database folder format that was modified a little from Deepface Streaming.
+
+```
+root
+├──main.py
+├──Logs
+│   ├── promptface.log
+├── ImgDataBase
+│   ├── Alice
+│   │   ├── Alice01.jpg
+│   │   ├── Alice02.jpg
+│   ├── Bob
+│   │   ├── Bob01.jpg
+```
+
+Some logic has been changed
+- The cosine_distance measurement method has been changed to use scikit-learn.
+- Sort df in identity order.
+
 ## License
 
 PromptFace is licensed under the MIT License - see [`LICENSE`](https://github.com/M1nu0x0/prompt_face/blob/master/LICENSE) for more details.
