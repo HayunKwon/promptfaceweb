@@ -1,0 +1,10 @@
+{
+    "DB_PATH": "./ImgDataBase",
+    "MODEL_NAME": null,
+    "DETECTOR_BACKEND": null,
+    "ENFORCE_DETECTION": true,
+    "ALIGN": true,
+    "SOURCE": 0,
+    "TIME_THRESHOLD": 5,
+    "FRAME_THRESHOLD": 10
+}
