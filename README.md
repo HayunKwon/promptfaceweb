@@ -7,6 +7,7 @@ You can use the promptface by running quick_start.py , because it's basically ta
 
 There is example of quick start
 ```py
+# recommand python 3.8.12 version
 # project dependencies
 from promptface.modules.app import app
 
