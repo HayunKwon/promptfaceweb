@@ -59,12 +59,12 @@ def get_camera():
         tic=time.time(),
         target_path=None,
         target_distance=None,
-)
+    )
 def process(
-    img: cv2.typing.MatLike,
-    database_embeddings: NDArray[np.float64],
-    identities: pd.Series,
-) -> Tuple[NDArray, Optional[str], Optional[NDArray]]:
+        img: cv2.typing.MatLike,
+        database_embeddings: NDArray[np.float64],
+        identities: pd.Series,
+    ) -> Tuple[NDArray, Optional[str], Optional[NDArray]]:
     """
     modify img and return img, target_path, target_distance
 
@@ -148,12 +148,12 @@ def process(
 
 # this function is a modified version of deepface.modules.streaming.perform_facial_recognition
 def perform_facial_recognition(
-    img: NDArray,
-    # detected_faces: List[NDArray],
-    faces_coordinates: List[Tuple[int, int, int, int]],
-    database_embeddings: list,
-    df_identities: pd.Series,
-) -> Tuple[NDArray, Optional[str], Optional[NDArray]]:
+        img: NDArray,
+        # detected_faces: List[NDArray],
+        faces_coordinates: List[Tuple[int, int, int, int]],
+        database_embeddings: list,
+        df_identities: pd.Series,
+    ) -> Tuple[NDArray, Optional[str], Optional[NDArray]]:
     """
     Perform facial recognition, verification
 
