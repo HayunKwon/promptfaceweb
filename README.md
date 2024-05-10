@@ -3,7 +3,33 @@ custom deepface(v0.0.91) fork repo
 
 ## How to use
 
-You can use the promptface by running main.py , because it's basically taking the deepface.modules.streaming.analysis method out as the main.
+You can use the promptface by running quick_start.py , because it's basically taking the deepface.modules.streaming.analysis method out as the quick_start.
+
+There is example of quick start
+```py
+# project dependencies
+from promptface.modules.app import app
+
+
+# --- do something like on/off green LEDs or save data, etc... ---
+def on_verify_success(x, y):
+    print('x + y = {}'.format(x+y))
+    print(app.target_path, app.target_distance)
+    pass
+
+
+# --- do something like on/off red LEDs or save data, etc... ---
+def on_verify_failure():
+    print(app.target_path, app.target_distance)
+    pass
+
+
+# How to Use app
+app(on_verify_success, on_verify_failure, params1=(1, 3), params2=())
+
+# pass None when you don't want to pass the function in app()
+# app(None, None)
+```
 
 There is an example of a database folder format that was modified a little from Deepface Streaming.
 
@@ -20,9 +46,10 @@ root
 │   │   ├── Bob01.jpg
 ```
 
-Some logic has been changed
+Some logic has been changed in comparison to deepface
 - The cosine_distance measurement method has been changed to use scikit-learn.
 - Sort df in identity order.
+- You can do something when verifies
 
 ## License
 
