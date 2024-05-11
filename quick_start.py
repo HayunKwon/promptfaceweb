@@ -6,13 +6,11 @@ from promptface.modules.app import app
 def on_verify_success(x, y):
     print('x + y = {}'.format(x+y))
     print(app.target_path, app.target_distance)
-    pass
 
 
 # --- do something like on/off red LEDs or save data, etc... ---
 def on_verify_failure():
     print(app.target_path, app.target_distance)
-    pass
 
 
 # How to Use app
