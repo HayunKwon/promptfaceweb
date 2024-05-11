@@ -188,6 +188,7 @@ def perform_facial_recognition(
 
         # check same person
         # this part is changed 'search_identify->check target_label' to 'verify cos_distance->check verify'
+        # TODO ArcFace, cosine gets 0.68, but i thing 0.68 is pretty spacious
         if distance[most_similar_index] >= find_threshold(model_name=MODEL_NAME, distance_metric='cosine'):
             continue
 
