@@ -177,6 +177,7 @@ def perform_facial_recognition(
                                             enforce_detection=ENFORCE_DETECTION,
                                             detector_backend=DETECTOR_BACKEND,
                                             align=ALIGN,)
+        # TODO check what is the first face if detected face is more then one
         embedding:list = embedding_objs[0]["embedding"]
         new_embedding = np.array(embedding, dtype=np.float64)
 
