@@ -1,5 +1,5 @@
 # project dependencies
-from promptface.modules.app import app
+from promptface.Promptface import app
 
 
 # --- do something like on/off green LEDs or save data, etc... ---
