@@ -5,6 +5,7 @@ on:
     paths:
       - '.github/workflows/tests.yml'
       - 'deepface/**'  
+      - 'promptface/**'  
       - 'tests/**'
       - 'api/**'
       - 'requirements.txt'
@@ -13,7 +14,8 @@ on:
   pull_request:
     paths:
       - '.github/workflows/tests.yml'
-      - 'deepface/**'  
+      - 'deepface/**'  j
+      - 'promptface/**'
       - 'tests/**'
       - 'api/**'
       - 'requirements.txt'
