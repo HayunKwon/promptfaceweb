@@ -16,6 +16,14 @@ from promptface.utils.folder_utils import createDirectory
 from promptface.modules.pkl import load_pkl
 from promptface.modules.streaming import get_camera, process
 
+def cli() -> None:
+    """
+    command line interface function will be offered in this block
+    """
+    import fire
+    fire.Fire()
+
+
 @static_vars(
         target_path=None,
         target_distance=None
