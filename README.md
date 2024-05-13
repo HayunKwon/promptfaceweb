@@ -1,15 +1,38 @@
 # promptface
 custom deepface(v0.0.91) fork repo
 
+## Installation
+Recommend install promptface and deepface(0.0.91) is to download it from github. It's going to install the library itself and its prerequisites as well.
+```console
+$ pip install git+https://github.com/M1nu0x0/promptface.git
+```
+
+Also, you can install promptface from its source code.
+```
+$ git clone https://github.com/M1nu0x0/promptface.git
+$ cd promptface
+$ pip install -e .
+```
+
+Then you will be able to import the library and use its functionallities.
+```python
+from deepface import Deepface   # However the version of deepface is 0.0.91
+from promptface.modules.app import app
+```
+
 ## How to use
 
-You can use the promptface by running quick_start.py , because it's basically taking the deepface.modules.streaming.analysis method out as the quick_start.
+### deepface
+You can read README.md from [deepface](https://github.com/serengil/deepface) repository.
 
-There is example of quick start
+### promptface
+You can use the promptface by running quick_start.py and write constants.json.
+
+There is examples of quick_start.py and constants.json
 ```py
 # recommend python 3.8.12 version
 # project dependencies
-from promptface.modules.app import app
+from promptface.Promptface import app
 
 
 # --- do something like on/off green LEDs or save data, etc... ---
@@ -29,12 +52,25 @@ app(on_verify_success, on_verify_failure, params1=(1, 3), params2=())
 # pass None when you don't want to pass the function in app()
 # app(None, None)
 ```
+```json
+{
+    "DB_PATH": "./ImgDataBase",
+    "MODEL_NAME": null,
+    "DETECTOR_BACKEND": null,
+    "ENFORCE_DETECTION": true,
+    "ALIGN": true,
+    "SOURCE": 0,
+    "TIME_THRESHOLD": 5,
+    "FRAME_THRESHOLD": 10
+}
+```
 
 There is an example of a database folder format that was modified a little from Deepface Streaming.
 
 ```
 root
 ├──main.py
+├──constants.json
 ├──Logs
 │   ├── promptface.log
 ├── ImgDataBase
