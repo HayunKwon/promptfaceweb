@@ -1,5 +1,7 @@
 """
 This module is a modified version of deepface.modules.streaming.analysis function
+
+app: verify webcam from db
 """
 
 # 3rd party dependencies
@@ -121,6 +123,3 @@ def app(*args, **kwargs):
     cap.release()
     cv2.destroyAllWindows()
     logger.info(INFO_FORMAT.format('END'))
-
-
-
