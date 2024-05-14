@@ -7,13 +7,6 @@ Recommend install promptface and deepface(0.0.91) is to download it from github.
 $ pip install git+https://github.com/M1nu0x0/promptface.git
 ```
 
-Also, you can install promptface from its source code.
-```
-$ git clone https://github.com/M1nu0x0/promptface.git
-$ cd promptface
-$ pip install -e .
-```
-
 Then you will be able to import the library and use its functionallities.
 ```python
 from deepface import Deepface   # However the version of deepface is 0.0.91
