@@ -17,3 +17,6 @@ benchmarks/results
 benchmarks/outputs
 benchmarks/dataset
 benchmarks/lfwe
+
+Logs/
+ImgDataBase/
