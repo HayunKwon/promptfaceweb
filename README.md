@@ -28,11 +28,11 @@ You can read README.md from [deepface](https://github.com/serengil/deepface) rep
 ### promptface
 You can use the promptface by running quick_start.py and write constants.json.
 
-There is examples of quick_start.py and constants.json
+#### Quick Start
 ```py
 # recommend python 3.8.12 version
 # project dependencies
-from promptface.Promptface import app
+from promptface.PromptFace import app
 
 
 # --- do something like on/off green LEDs or save data, etc... ---
@@ -52,6 +52,8 @@ app(on_verify_success, on_verify_failure, params1=(1, 3), params2=())
 # pass None when you don't want to pass the function in app()
 # app(None, None)
 ```
+
+#### Constants
 ```json
 {
     "DB_PATH": "./ImgDataBase",
@@ -64,9 +66,28 @@ app(on_verify_success, on_verify_failure, params1=(1, 3), params2=())
     "FRAME_THRESHOLD": 10
 }
 ```
+If you assign a `null` values in constants.json, it is automatically set to the values in the following table.
+| Constants         |    Contents     |
+| ----------------- | :-------------: |
+| DB_PATH           | "./ImgDataBase" |
+| MODEL_NAME        |    "ArcFace"    |
+| DETECTOR_BACKEND  |    "opencv"     |
+| ENFORCE_DETECTION |      True       |
+| ALIGN             |      True       |
+| SOURCE            |        0        |
+| TIME_THRESHOLD    |        5        |
+| FRAME_THRESHOLD   |        5        |
 
+There is options for model and detector.
+```py
+detectors = ["retinaface", "mtcnn", "fastmtcnn", "dlib", "yolov8", "yunet", "centerface", "mediapipe", "ssd", "opencv", "skip"]
+
+models = ["Facenet512", "Facenet", "VGG-Face", "ArcFace", "Dlib", "GhostFaceNet", "SFace", "OpenFace", "DeepFace", "DeepID"]
+```
+If you want to use some models and detectors, requirements_additional.txt must be installed.
+
+#### Folder Format
 There is an example of a database folder format that was modified a little from Deepface Streaming.
-
 ```
 root
 ├──main.py
@@ -85,6 +106,13 @@ Some logic has been changed in comparison to deepface
 - The cosine_distance measurement method has been changed to use scikit-learn.
 - Sort df in identity order.
 - You can do something when verifies
+
+## Diffrence from deepface
+### promptface.modules.pkl
+This Module contains "show_pkl", "load_pkl", "init_pkl" funcs. Among them, "init_pkl" is a customized function from deepface.modules.recognitions: find. "find" function has two main logics. First, initialize pickle file. Second, find the minimum distance between the input img and DataFrame from pkl. So I made "init_pkl" because I wanted to separate the two features.
+
+### promptface.modules.streaming
+This Module is customized func from deepface.modules.streaming: stream. I want to do someting when "freezed". So I customized stream func.
 
 ## License
 
