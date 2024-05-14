@@ -112,7 +112,10 @@ Some logic has been changed in comparison to deepface
 This Module contains "show_pkl", "load_pkl", "init_pkl" funcs. Among them, "init_pkl" is a customized function from deepface.modules.recognitions: find. "find" function has two main logics. First, initialize pickle file. Second, find the minimum distance between the input img and DataFrame from pkl. So I made "init_pkl" because I wanted to separate the two features.
 
 ### promptface.modules.streaming
-This Module is customized func from deepface.modules.streaming: stream. I want to do someting when "freezed". So I customized stream func.
+This Module is customized func from deepface.modules.streaming: stream. I want to do someting when "freezed". And I don't need other analysis tool. So I removed everyting except the classification. Finally, I felt inefficient to check pickle files for every face detection.
+
+### Cosine Distance
+As a result of separating the functions of "find" into two, we had to find the most similar image. At that time, what caught my eye was the benchmark of deepface(0.0.91), and using cosine_distance worked well, so I implemented it through scikit-learn.
 
 ## License
 
