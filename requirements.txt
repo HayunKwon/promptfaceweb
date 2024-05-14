@@ -13,3 +13,4 @@ retina-face>=0.0.1
 fire>=0.4.0
 gunicorn>=20.1.0
 scikit-learn>=1.3.2
+matplotlib>=3.7.5
