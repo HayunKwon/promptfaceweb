@@ -25,7 +25,7 @@ DB_PATH = data["DB_PATH"] if data["DB_PATH"] else './ImgDataBase'
 
 # about deepface
 MODEL_NAME = data["MODEL_NAME"] if data["MODEL_NAME"] else 'ArcFace'
-DETECTOR_BACKEND = data["DETECTOR_BACKEND"] if data["DETECTOR_BACKEND"] else 'yolov8'
+DETECTOR_BACKEND = data["DETECTOR_BACKEND"] if data["DETECTOR_BACKEND"] else 'opencv'
 # IMPORTANT
 # if False, you'll have a full image embeddings as a face image, not None, when no detected face
 ENFORCE_DETECTION = data["ENFORCE_DETECTION"] if data["ENFORCE_DETECTION"] else True
