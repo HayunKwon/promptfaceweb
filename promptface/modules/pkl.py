@@ -1,12 +1,14 @@
 """
 This module is a modified version of deepface.modules.recognition.py
 
+show_pkl: log pkl df and show cropped face img
 load_pkl: init pkl and return vectorized embeddings, identities
 init_pkl: init pkl and update pkl
 """
 
 # built-in dependencies
 import os
+import copy
 import time
 import pickle
 import operator
@@ -17,23 +19,92 @@ import cv2
 import numpy as np
 import pandas as pd
 from tqdm import tqdm   # for __find_buld_embeddings
+import matplotlib.pyplot as plt
+from matplotlib.gridspec import GridSpec
 
 # deepface
 from deepface.commons import image_utils
 from deepface.modules import detection, representation
 
 # project dependencies
-from promptface.utils.constants import ALIGN, DB_PATH, DETECTOR_BACKEND, ENFORCE_DETECTION, MODEL_NAME
+from promptface.utils.constants import ALIGN, DB_PATH, DETECTOR_BACKEND, ENFORCE_DETECTION, INFO_FORMAT, MODEL_NAME
 from promptface.utils.logger import Logger
 
 logger = Logger(__name__)
 
 
+def show_pkl(show_plt=False):
+    """
+    Log pkl that full imgs, face cropped imgs and ratio of face area
+
+    Args:
+        show_plt (bool): if True, show plt.
+    """
+    # ----- INIT -----
+    try:
+        # set logger
+        show_logger = Logger(__name__, 'Logs/show_pickel.log')
+        show_logger.info(INFO_FORMAT.format('APP START'))
+
+        # init pickle and get representatinos
+        representations = init_pkl()
+    except Exception as e:
+        show_logger.critical(str(e))
+        exit(1)
+
+
+    # ----- MAIN -----
+    show_logger.info(INFO_FORMAT.format('SHOW PICKLE'))
+    df = pd.DataFrame(representations)
+    show_logger.info('\n{}'.format(df))
+
+    # img_paths = representations.identity
+    for _, data_row in df.iterrows():
+        # set data
+        path = data_row.identity
+        is_face = True if data_row.embedding else False
+        show_logger.info('{}\tface area ratio: {}%'.format(path, round((data_row.target_w * data_row.target_h) / (data_row.original_shape[0] * data_row.original_shape[1]) * 100, 2)))
+
+        if show_plt is False:
+            continue
+
+        # set img
+        original_img = cv2.imread(path)
+        original_img = cv2.cvtColor(original_img, cv2.COLOR_BGR2RGB)
+
+        face_img = np.zeros((original_img.shape), np.uint8)
+        if is_face:
+            left, top = data_row.target_x, data_row.target_y
+            right, bottom = left + data_row.target_w, top + data_row.target_h
+            face_img = copy.deepcopy(original_img[top:bottom, left:right])
+            thickness = original_img.shape[1] // 350
+            original_img = cv2.rectangle(original_img, (left, top), (right, bottom), (255, 67, 67), thickness)
+
+
+        # save result
+        k = 1.2
+        fig_img = plt.figure(figsize=(8*k, 5*k))
+        gs = GridSpec(ncols=2, nrows=1, figure=fig_img)
+
+        ax0 = fig_img.add_subplot(gs[: ,0])
+        ax0.title.set_text('Original image')
+        ax0.imshow(original_img)
+
+        ax1 = fig_img.add_subplot(gs[0, 1])
+        ax1.title.set_text('detect: {}'.format(is_face))
+        ax1.imshow(face_img, interpolation='none')
+        ax1.axis('off')
+
+        # show
+        fig_img.suptitle("{} {}\nx, y, w, h\n{} {} {} {}".format(path, is_face, data_row.target_x, data_row.target_y, data_row.target_w, data_row.target_h))
+        fig_img.tight_layout()
+        plt.show()
+        plt.close()
+
+
 # ---------------
 # custom load pkl
-def load_pkl(
-        db_path = DB_PATH,
-    ):
+def load_pkl(db_path = DB_PATH):
     """
     return vectorized embedings from ImgDB and identities from df after init pkl
 
