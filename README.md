@@ -1,15 +1,15 @@
 # promptface
-custom deepface(v0.0.91) fork repo
+customized deepface(v0.0.91) fork repo
 
 ## Installation
-Recommend install promptface and deepface(0.0.91) is to download it from github. It's going to install the library itself and its prerequisites as well.
+Recommend install promptface and deepface(v0.0.91) is to download it from github. It's going to install the library itself and its prerequisites as well.
 ```console
 $ pip install git+https://github.com/M1nu0x0/promptface.git
 ```
 
 Then you will be able to import the library and use its functionallities.
 ```python
-from deepface import Deepface   # However the version of deepface is 0.0.91
+from deepface import Deepface   # However the version of deepface is v0.0.91
 from promptface.modules.app import app
 ```
 
@@ -108,7 +108,7 @@ This Module contains "show_pkl", "load_pkl", "init_pkl" funcs. Among them, "init
 This Module is customized func from deepface.modules.streaming: stream. I want to do someting when "freezed". And I don't need other analysis tool. So I removed everyting except the classification. Finally, I felt inefficient to check pickle files for every face detection.
 
 ### Cosine Distance
-As a result of separating the functions of "find" into two, we had to find the most similar image. At that time, what caught my eye was the benchmark of deepface(0.0.91), and using cosine_distance worked well, so I implemented it through scikit-learn.
+As a result of separating the functions of "find" into two, we had to find the most similar image. At that time, what caught my eye was the benchmark of deepface(v0.0.91), and using cosine_distance worked well, so I implemented it through scikit-learn.
 
 ## License
 
