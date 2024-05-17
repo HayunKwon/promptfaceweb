@@ -27,7 +27,7 @@ from deepface.commons import image_utils
 from deepface.modules import detection, representation
 
 # project dependencies
-from promptface.utils.constants import ALIGN, DB_PATH, DETECTOR_BACKEND, ENFORCE_DETECTION, INFO_FORMAT, MODEL_NAME
+from promptface.utils.constants import ALIGN, DB_PATH, DETECTOR_BACKEND, DISCARD_PERCENTAGE, ENFORCE_DETECTION, INFO_FORMAT, MODEL_NAME
 from promptface.utils.logger import Logger
 
 logger = Logger(__name__)
@@ -43,27 +43,27 @@ def show_pkl(show_plt=False):
     # ----- INIT -----
     try:
         # set logger
-        show_logger = Logger(__name__, 'Logs/show_pickel.log')
-        show_logger.info(INFO_FORMAT.format('APP START'))
+        # logger = Logger(__name__, 'Logs/pickels.log')
+        logger.info(INFO_FORMAT.format('APP START'))
 
         # init pickle and get representatinos
         representations = init_pkl()
     except Exception as e:
-        show_logger.critical(str(e))
+        logger.critical(str(e))
         exit(1)
 
 
     # ----- MAIN -----
-    show_logger.info(INFO_FORMAT.format('SHOW PICKLE'))
+    logger.info(INFO_FORMAT.format('SHOW PICKLE'))
     df = pd.DataFrame(representations)
-    show_logger.info('\n{}'.format(df))
+    logger.info('\n{}'.format(df))
 
     # img_paths = representations.identity
     for _, data_row in df.iterrows():
         # set data
         path = data_row.identity
         is_face = True if data_row.embedding else False
-        show_logger.info('{}\tface area ratio: {}%'.format(path, round((data_row.target_w * data_row.target_h) / (data_row.original_shape[0] * data_row.original_shape[1]) * 100, 2)))
+        logger.info('{}\tface area ratio: {}%'.format(path, round((data_row.target_w * data_row.target_h) / (data_row.original_shape[0] * data_row.original_shape[1]) * 100, 2)))
 
         if show_plt is False:
             continue
@@ -87,11 +87,11 @@ def show_pkl(show_plt=False):
         gs = GridSpec(ncols=2, nrows=1, figure=fig_img)
 
         ax0 = fig_img.add_subplot(gs[: ,0])
-        ax0.title.set_text('Original image')
+        ax0.set_title('Original image')
         ax0.imshow(original_img)
 
         ax1 = fig_img.add_subplot(gs[0, 1])
-        ax1.title.set_text('detect: {}'.format(is_face))
+        ax1.set_title('detect: {}'.format(is_face))
         ax1.imshow(face_img, interpolation='none')
         ax1.axis('off')
 
@@ -115,10 +115,8 @@ def load_pkl(db_path = DB_PATH):
         identities (Series): Series from df.identities
     """
     representation = init_pkl(db_path=db_path)
-    logger.info('complete to initialize pickle')
-
     embeddings, identities = __get_embeddings_from_db(representation)
-    
+    logger.info('complete to load pickle')
     return __vectorize(embeddings=embeddings), identities
 
 
@@ -180,6 +178,7 @@ def init_pkl(
         enforce_detection: bool = ENFORCE_DETECTION,
         detector_backend: str = DETECTOR_BACKEND,
         align: bool = ALIGN,
+        discard_percentage: int = DISCARD_PERCENTAGE,
         expand_percentage: int = 0,
         normalization: str = "base",
         silent: bool = False,
@@ -201,6 +200,8 @@ def init_pkl(
             'mtcnn', 'ssd', 'dlib', 'mediapipe', 'yolov8', 'centerface' or 'skip'.
 
         align (boolean): Perform alignment based on the eye positions.
+
+        discard_percentage (int): discard face img size per full img size ratio.
 
         expand_percentage (int): expand detected facial area with a percentage (default is 0).
 
@@ -349,37 +350,40 @@ def init_pkl(
             toc = time.time()
             logger.info(f"find function duration {toc - tic} seconds")
         return []
-    
+
+    # post-processing
+    representations = __discard_small_face(representations, discard_percentage=discard_percentage)
+    representations = sorted(representations, key=operator.itemgetter('identity'))
+
     if not silent:
         toc = time.time()
         logger.info("Initialization complete")
         logger.info(f"find function duration {toc - tic} seconds")
-
-    # post-processing
-    representations = __find_missing_value(representations)
-    representations = sorted(representations, key=operator.itemgetter('identity'))
     return representations
 
 
-def __find_missing_value(
-        representations: List[Dict["str", Any]]
+def __discard_small_face(
+        representations: List[Dict["str", Any]],
+        discard_percentage:int = DISCARD_PERCENTAGE,
     ) -> List[Dict["str", Any]]:
     """
     make missing value when target size is less then 2% of full size
 
     Args:
         representations (list): it contains dict that defined as df_col
+        discard_percentage (int): discard face img size per full img size ratio.
+
     Returns:
         representations (list): processed List[Dict["str", Any]]
     """
     # modify percentage if you want to filter big target_size
-    percentage = 2
+    discard_percentage = discard_percentage
 
     new_reps = []
     for rep in representations:
         original_size = rep['original_shape'][0] * rep['original_shape'][1]
         target_size = rep['target_w'] * rep['target_h']
-        if original_size * percentage // 100 > target_size:
+        if original_size * discard_percentage // 100 > target_size:
             rep['embedding'] = None
         new_reps.append(rep)
     return new_reps
@@ -430,6 +434,7 @@ def __find_bulk_embeddings(
         disable=silent,
     ):
         file_hash = image_utils.find_image_hash(employee)
+        img_shape = cv2.imread(employee).shape
 
         try:
             img_objs = detection.extract_faces(
@@ -451,7 +456,7 @@ def __find_bulk_embeddings(
                     "identity": employee,
                     "hash": file_hash,
                     "embedding": None,
-                    "original_shape": None,
+                    "original_shape": img_shape,
                     "target_x": 0,
                     "target_y": 0,
                     "target_w": 0,
@@ -477,7 +482,7 @@ def __find_bulk_embeddings(
                         "identity": employee,
                         "hash": file_hash,
                         "embedding": img_representation,
-                        "original_shape": cv2.imread(employee).shape,
+                        "original_shape": img_shape,
                         "target_x": img_region["x"],
                         "target_y": img_region["y"],
                         "target_w": img_region["w"],
