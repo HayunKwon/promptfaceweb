@@ -1,20 +1,21 @@
 # project dependencies
-from promptface import Promptface
+from promptface.Promptface import Promptface
+from promptface.utils.abstract import AbstractOnVeried
+
+class MyCallback(AbstractOnVeried):
+    def on_verify_success(self, app_instance: Promptface, *args, **kwargs):
+        target_path = app_instance.target_path
+        target_distance = app_instance.target_distance
+        print('{} {}'.format(target_path, target_distance))
+        print(f'args: {args}')
+        print(f'kwargs: {kwargs}')
+
+    def on_verify_failed(self, app_instance: Promptface, *args, **kwargs):
+        target_path = app_instance.target_path
+        target_distance = app_instance.target_distance
+        print('{} {}'.format(target_path, target_distance))
 
 
-# --- do something like on/off green LEDs or save data, etc... ---
-def on_verify_success(x, y):
-    print('x + y = {}'.format(x+y))
-    print(Promptface.app.target_path, Promptface.app.target_distance)
-
-
-# --- do something like on/off red LEDs or save data, etc... ---
-def on_verify_failure():
-    print(Promptface.app.target_path, Promptface.app.target_distance)
-
-
-# How to Use app
-Promptface.app(on_verify_success, on_verify_failure, params1=(1, 3), params2=())
-
-# pass None when you don't want to pass the function in app()
-# app(None, None)
+# Main
+callback = MyCallback()
+Promptface.app(callback, 'this is args1', 2, key1=(), key2=('value1', 'value2'))
