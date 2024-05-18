@@ -122,7 +122,7 @@ Threshold formula.
 ```math
  \sqrt{\frac{h\times w\times x}{100}}
 ```
-when h = hegit, w = weight, x = percentage.
+when h = hegit, w = width, x = ratio.
 
 Here are areas of face I experimented with.
 | Shot             | Percent    |
@@ -135,9 +135,9 @@ Caution. The ratio varies depending on the composition of your screen, so calcul
 
 To calculate the ratio, use the following equation.
 ```math
-\frac{h \times w}{H \times W}
+x = \frac{h \times w}{H \times W}
 ```
-when h = face height, w = face weight, H = img height, W = img weight.
+when h = face height, w = face weidth, H = img height, W = img width.
 
 ### promptface.modules.pkl
 This Module contains "show_pkl", "load_pkl", "init_pkl" funcs. Among them, "init_pkl" is a customized function from deepface.modules.recognitions: find. "find" function has two main logics. First, initialize pickle file. Second, find the minimum distance between the input img and DataFrame from pkl. So I made "init_pkl" because I wanted to separate the two features.
