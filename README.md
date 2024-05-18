@@ -107,7 +107,7 @@ Some logic has been changed in comparison to deepface
 ### face size threshold
 Default face size threshold in streaming is `130`. So I thought that threshold doesn't fit every resolutions like smaller size resolution and bigger size resolution. Here is an example resolution.
 
-height x weight (View camera shots long vertically)
+height x width (View camera shots long vertically)
 - 1920 x 1080
   - I think FHD size resolution is optimized for default threshold, 130.
   - When it is MFS(Medium Full Shot, 3/4 shot), the face area is about 2%.
@@ -120,9 +120,9 @@ height x weight (View camera shots long vertically)
 
 Threshold formula.
 ```math
- \sqrt{\frac{h\times w\times x}{100}}
+ t = \sqrt{\frac{h\times w\times x}{100}}
 ```
-when h = hegit, w = width, x = ratio.
+when h = height, w = width, x = ratio, t = threshold.
 
 Here are areas of face I experimented with.
 | Shot             | Percent    |
@@ -137,7 +137,7 @@ To calculate the ratio, use the following equation.
 ```math
 x = \frac{h \times w}{H \times W}
 ```
-when h = face height, w = face weidth, H = img height, W = img width.
+when h = face height, w = face width, H = img height, W = img width.
 
 ### promptface.modules.pkl
 This Module contains "show_pkl", "load_pkl", "init_pkl" funcs. Among them, "init_pkl" is a customized function from deepface.modules.recognitions: find. "find" function has two main logics. First, initialize pickle file. Second, find the minimum distance between the input img and DataFrame from pkl. So I made "init_pkl" because I wanted to separate the two features.
