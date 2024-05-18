@@ -16,7 +16,7 @@ from promptface.utils.logger import Logger
 from promptface.utils.abstract import AbstractOnVeried
 from promptface.utils.folder_utils import createDirectory
 from promptface.modules.pkl import load_pkl
-from promptface.modules.streaming import get_camera, AbstractPromptface
+from promptface.modules.streaming import AbstractPromptface
 
 def cli() -> None:
     """
@@ -66,7 +66,7 @@ class Promptface(AbstractPromptface):
             database_embeddings, identities = load_pkl()
 
             # activate camera
-            cap = get_camera()  # webcam
+            # cap = app_instance.get_camera()  # webcam
         except Exception as e:
             logger.critical(str(e))
             exit(1)
@@ -76,7 +76,7 @@ class Promptface(AbstractPromptface):
         logger.info(INFO_FORMAT.format('START MAIN'))
         while True:
             # get img from new frame
-            _, img = cap.read()
+            _, img = app_instance.cap.read()
 
             # get verified content and img processing like boxing face, etc...
             img = app_instance.process(img, database_embeddings, identities)
@@ -121,6 +121,6 @@ class Promptface(AbstractPromptface):
 
         # ----- END -----
         # kill open cv things
-        cap.release()
+        app_instance.cap.release()
         cv2.destroyAllWindows()
         logger.info(INFO_FORMAT.format('END'))

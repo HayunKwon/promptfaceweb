@@ -6,6 +6,7 @@ process: modify img and return img, target_path, target_distance
 """
 
 # built-in dependencies
+import math
 import time
 from abc import ABC, abstractmethod
 from typing import List, Tuple, Optional
@@ -36,22 +37,6 @@ from promptface.utils.logger import Logger
 logger = Logger(__name__)
 
 
-def get_camera():
-    """
-    get cv2.VideoCapture safely
-
-    Returns:
-        capture (cv2.VideoCapture): 
-    """
-    cap = cv2.VideoCapture(SOURCE)
-
-    has_frame, _ = cap.read()
-    if has_frame is None:
-        raise ValueError('No Camera')
-
-    return cap
-
-
 class AbstractPromptface(ABC):
     def __init__(self):
         self.num_frames_with_faces:int = 0
@@ -60,6 +45,28 @@ class AbstractPromptface(ABC):
         self.tic:float = time.time()
         self.target_path:Optional[str] = None
         self.target_distance:Optional[NDArray[np.float64]] = None
+
+        self.cap = self.get_camera()
+        _, img = self.cap.read()
+        size = img.shape[0] * img.shape[1]
+        self.threshold_size = int(math.sqrt(size*DISCARD_PERCENTAGE/100))
+
+
+    def get_camera(self):
+        """
+        get cv2.VideoCapture safely
+
+        Returns:
+            capture (cv2.VideoCapture): 
+        """
+        cap = cv2.VideoCapture(SOURCE)
+
+        has_frame, _ = cap.read()
+        if has_frame is None:
+            raise ValueError('No Camera')
+
+        return cap
+
 
     @classmethod
     @abstractmethod
@@ -102,7 +109,7 @@ class AbstractPromptface(ABC):
             # [0:1] means get first face.
             # threshold means discard threshold x threshold size face
             # TODO DISCARD_PERCENTAGE to THRESHOLD
-            faces_coordinates = grab_facial_areas(img=img, detector_backend=DETECTOR_BACKEND, threshold=130)[0:1]
+            faces_coordinates = grab_facial_areas(img=img, detector_backend=DETECTOR_BACKEND, threshold=self.threshold_size)[0:1]
 
             # we will pass img to analyze modules (identity, demography) and add some illustrations
             # that is why, we will not be able to extract detected face from img clearly
