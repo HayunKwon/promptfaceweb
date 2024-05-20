@@ -11,6 +11,8 @@ DISCARD_PERCENTAGE: discard face img size per full img size ratio.
 SOURCE: camera number
 TIME_THRESHOLD: freezing time
 FRAME_THRESHOLD: ensure the face when face is detected during N frames
+RASPI_IP: if you use MQTT with raspberrypi, you should set IP.
+RASPI_PORT: default port is 1883.
 INFO_FORMAT: stream format for log
 """
 # built-in dependencies
@@ -19,6 +21,7 @@ from typing import Dict, Any
 
 # project dependencies
 from promptface.utils.logger import Logger
+from promptface.utils.check_ip import IPv4
 
 logger = Logger(__name__)
 
@@ -32,7 +35,10 @@ _DEFAULT_DATA = {
     "DISCARD_PERCENTAGE": 2,
     "SOURCE": 0,
     "TIME_THRESHOLD": 5,
-    "FRAME_THRESHOLD": 10
+    "FRAME_THRESHOLD": 10,
+    "RASPI_IP": None,
+    "RASPI_PORT": 1883,
+    "RASPI_TOPIC": "home/prompt_server",
 }
 
 
@@ -51,7 +57,10 @@ except FileNotFoundError as e:
         "DISCARD_PERCENTAGE": 2,
         "SOURCE": 0,
         "TIME_THRESHOLD": 5,
-        "FRAME_THRESHOLD": 10
+        "FRAME_THRESHOLD": 10,
+        "RASPI_IP": None,
+        "RASPI_PORT": 1883,
+        "RASPI_TOPIC": "home/prompt_server",
     }
     with open('./constants.json', 'w') as f:
         json.dump(data, f, indent='\t')
@@ -80,6 +89,12 @@ DISCARD_PERCENTAGE:int = data["DISCARD_PERCENTAGE"]
 SOURCE:int = data["SOURCE"]
 TIME_THRESHOLD:int = data["TIME_THRESHOLD"]
 FRAME_THRESHOLD:int = data["FRAME_THRESHOLD"]
+
+
+# MQTT
+RASPI_IP:IPv4 = data["RASPI_IP"]
+RASPI_PORT:int = data["RASPI_PORT"]
+RASPI_TOPIC:str = data["RASPI_TOPIC"]
 
 
 # stream format
