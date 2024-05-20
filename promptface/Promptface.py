@@ -30,20 +30,12 @@ class Promptface(AbstractPromptface):
     def app(cls, callback:AbstractOnVeried, *args, **kwargs):
         """
         this function is from analysis.
-        you can pass the (functions, params) to use
 
         Args:
             cls: class
             callback: callback instance from ..utils.abstract.AbstractVerified class
             *args: for callback func.
             **kwargs: for callback func.
-                params1 is for on_verify_success.
-
-                If you want separate params, write params1=(), params2=().
-
-                If params1 not in kwargs, params1 = kwargs.
-
-                If params2 not in kwargs, params2 = kwargs.
         """
         # set app_instance
         app_instance = cls()
@@ -79,7 +71,7 @@ class Promptface(AbstractPromptface):
             _, img = app_instance.cap.read()
 
             # get verified content and img processing like boxing face, etc...
-            img = app_instance.process(img, database_embeddings, identities)
+            img = app_instance.process(img, database_embeddings, identities, False)
 
             # show
             cv2.imshow("img", img)

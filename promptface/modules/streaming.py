@@ -36,6 +36,21 @@ from promptface.utils.logger import Logger
 
 logger = Logger(__name__)
 
+def get_camera():
+    """
+    get cv2.VideoCapture safely
+
+    Returns:
+        capture (cv2.VideoCapture): 
+    """
+    cap = cv2.VideoCapture(SOURCE)
+
+    has_frame, _ = cap.read()
+    if has_frame is None:
+        raise ValueError('No Camera')
+
+    return cap
+
 
 class AbstractPromptface(ABC):
     def __init__(self):
@@ -46,38 +61,26 @@ class AbstractPromptface(ABC):
         self.target_path:Optional[str] = None
         self.target_distance:Optional[NDArray[np.float64]] = None
 
-        self.cap = self.get_camera()
-        _, img = self.cap.read()
-        size = img.shape[0] * img.shape[1]
-        self.threshold_size = int(math.sqrt(size*DISCARD_PERCENTAGE/100))
-
-
-    def get_camera(self):
-        """
-        get cv2.VideoCapture safely
-
-        Returns:
-            capture (cv2.VideoCapture): 
-        """
-        cap = cv2.VideoCapture(SOURCE)
-
-        has_frame, _ = cap.read()
-        if has_frame is None:
-            raise ValueError('No Camera')
-
-        return cap
+        if RASPI_IP == None:
+            self.cap = get_camera()
+            _, img = self.cap.read()
+            size = img.shape[0] * img.shape[1]
+            self.threshold_size = int(math.sqrt(size*DISCARD_PERCENTAGE/100))
 
 
     @classmethod
     @abstractmethod
-    def app(cls, verification_result, callback, *args, **kwargs):
+    def app(cls, callback, *args, **kwargs):
         pass
 
-    def process(self,
-                img: cv2.typing.MatLike,
-                database_embeddings: NDArray[np.float64],
-                identities: pd.Series,
-            ):
+
+    def process(
+            self,
+            img: cv2.typing.MatLike,
+            database_embeddings: NDArray[np.float64],
+            identities: pd.Series,
+            face_overlay: bool = True
+        ):
         """
         modify img and return img, target_path, target_distance
 
@@ -133,6 +136,7 @@ class AbstractPromptface(ABC):
                                                       faces_coordinates=faces_coordinates,
                                                       database_embeddings=database_embeddings,
                                                       df_identities=identities,
+                                                      face_overlay=face_overlay,
                                                   )
 
                 # # check img is None
@@ -160,13 +164,15 @@ class AbstractPromptface(ABC):
 
 
     # this function is a modified version of deepface.modules.streaming.perform_facial_recognition
-    def perform_facial_recognition(self,
-                                   img: cv2.typing.MatLike,
-                                   # detected_faces: List[NDArray],
-                                   faces_coordinates: List[Tuple[int, int, int, int]],
-                                   database_embeddings: NDArray[np.float64],
-                                   df_identities: pd.Series,
-                               ):
+    def perform_facial_recognition(
+            self,
+            img: cv2.typing.MatLike,
+            # detected_faces: List[NDArray],
+            faces_coordinates: List[Tuple[int, int, int, int]],
+            database_embeddings: NDArray[np.float64],
+            df_identities: pd.Series,
+            face_overlay:bool = True,
+        ):
         """
         Perform facial recognition, verification
 
@@ -237,15 +243,16 @@ class AbstractPromptface(ABC):
 
             target_label = target_path.split('\\')[-1].split('.')[0]
 
-            img = overlay_identified_face(
-                img=img,
-                target_img=target_img,
-                label="{} {}".format(target_label, round(float(distance[most_similar_index]), 2)),
-                x=x,
-                y=y,
-                w=w,
-                h=h,
-            )
+            if face_overlay:
+                img = overlay_identified_face(
+                    img=img,
+                    target_img=target_img,
+                    label="{} {}".format(target_label, round(float(distance[most_similar_index]), 2)),
+                    x=x,
+                    y=y,
+                    w=w,
+                    h=h,
+                )
 
         # pass through func without changing img when is_verify is False
         # return img, target_path if is_verify else None, distance[most_similar_index]
