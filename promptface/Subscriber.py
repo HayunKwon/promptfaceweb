@@ -1,4 +1,5 @@
 # built-in dependencies
+import base64
 import math
 
 # 3rd-party dependencies
@@ -40,7 +41,10 @@ class Subscriber(AbstractPromptface):
 
     def on_message(self, client, userdata, msg):
         jpg_as_np = np.frombuffer(msg.payload, dtype=np.uint8)
-        self.image = cv2.imdecode(jpg_as_np, cv2.IMREAD_COLOR)
+        # self.image = cv2.imdecode(jpg_as_np, cv2.IMREAD_COLOR)
+        self.image = base64.b64decode(msg.payload)
+        self.image = np.frombuffer(self.image, dtype=np.uint8)
+        self.image = cv2.imdecode(self.image, 1)
         if self.threshold_size == 0:
             size = self.image.shape[0] * self.image.shape[1]
             self.threshold_size = int(math.sqrt(size*DISCARD_PERCENTAGE/100))
