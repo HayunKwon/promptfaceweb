@@ -1,3 +1,6 @@
+# built-in dependencies
+import math
+
 # 3rd-party dependencies
 import cv2
 import numpy as np
@@ -7,7 +10,7 @@ import paho.mqtt.client as mqtt
 from deepface import DeepFace
 
 # project dependencies
-from promptface.utils.constants import DB_PATH, INFO_FORMAT, MODEL_NAME, RASPI_IP, RASPI_PORT, RASPI_TOPIC
+from promptface.utils.constants import DB_PATH, INFO_FORMAT, MODEL_NAME, RASPI_IP, RASPI_PORT, RASPI_TOPIC, DISCARD_PERCENTAGE
 from promptface.utils.logger import Logger
 from promptface.utils.abstract import AbstractOnVeried
 from promptface.utils.folder_utils import createDirectory
@@ -38,6 +41,10 @@ class Subscriber(AbstractPromptface):
     def on_message(self, client, userdata, msg):
         jpg_as_np = np.frombuffer(msg.payload, dtype=np.uint8)
         self.image = cv2.imdecode(jpg_as_np, cv2.IMREAD_COLOR)
+        if self.threshold_size == 0:
+            size = self.image.shape[0] * self.image.shape[1]
+            self.threshold_size = int(math.sqrt(size*DISCARD_PERCENTAGE/100))
+
 
     @classmethod
     def app(cls, callback:AbstractOnVeried, *args, **kwargs):

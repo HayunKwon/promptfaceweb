@@ -66,6 +66,8 @@ class AbstractPromptface(ABC):
             _, img = self.cap.read()
             size = img.shape[0] * img.shape[1]
             self.threshold_size = int(math.sqrt(size*DISCARD_PERCENTAGE/100))
+        else:
+            self.threshold_size = 0
 
 
     @classmethod
