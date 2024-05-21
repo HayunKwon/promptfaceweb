@@ -1,5 +1,5 @@
 # project dependencies
-from promptface.MQTTPromptface import Subscriber
+from Subscriber import Subscriber
 from promptface.utils.abstract import AbstractOnVeried
 
 class MyCallback(AbstractOnVeried):

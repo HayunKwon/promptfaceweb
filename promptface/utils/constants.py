@@ -21,7 +21,6 @@ from typing import Dict, Any
 
 # project dependencies
 from promptface.utils.logger import Logger
-from promptface.utils.check_ip import IPv4
 
 logger = Logger(__name__)
 
@@ -92,7 +91,7 @@ FRAME_THRESHOLD:int = data["FRAME_THRESHOLD"]
 
 
 # MQTT
-RASPI_IP:IPv4 = data["RASPI_IP"]
+RASPI_IP:str = data["RASPI_IP"]
 RASPI_PORT:int = data["RASPI_PORT"]
 RASPI_TOPIC:str = data["RASPI_TOPIC"]
 
