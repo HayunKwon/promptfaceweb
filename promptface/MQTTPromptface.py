@@ -7,7 +7,7 @@ import numpy as np
 import paho.mqtt.client as mqtt
 
 # deepface
-import DeepFace
+from deepface import DeepFace
 
 # project dependencies
 from promptface.utils.constants import DB_PATH, INFO_FORMAT, MODEL_NAME, RASPI_IP, RASPI_PORT, RASPI_TOPIC
