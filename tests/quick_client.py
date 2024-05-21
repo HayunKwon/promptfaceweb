@@ -8,7 +8,7 @@ import paho.mqtt.client as mqtt
 
 # project dependencies
 from promptface.utils.logger import Logger
-from promptface.utils.constants import INFO_FORMAT
+from promptface.utils.constants import INFO_FORMAT, RASPI_IP, RASPI_PORT, RASPI_TOPIC
 
 logger = Logger(__name__)
 
@@ -47,3 +47,6 @@ def client(broker, port, topic):
         cap.release()
         client.disconnect()
         logger.info(str(e))
+
+if __name__ == '__main__':
+    client(RASPI_IP, RASPI_PORT, RASPI_TOPIC)
