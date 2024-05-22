@@ -26,7 +26,7 @@ def client(broker_ip=BROKER_IP, broker_port=BROKER_PORT, topic_stream=TOPIC_STRE
     client.on_connect = on_connect
 
     # Establishing Connection with the Broker
-    client.connect(broker_ip, broker_port)
+    client.connect(host=broker_ip, port=broker_port)
     try:
         while True:
             # start = time.time()
