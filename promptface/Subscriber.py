@@ -11,7 +11,7 @@ import paho.mqtt.client as mqtt
 from deepface import DeepFace
 
 # project dependencies
-from promptface.utils.constants import DB_PATH, INFO_FORMAT, MODEL_NAME, RASPI_IP, RASPI_PORT, RASPI_TOPIC, DISCARD_PERCENTAGE
+from promptface.utils.constants import DB_PATH, INFO_FORMAT, MODEL_NAME, BROKER_IP, BROKER_PORT, TOPIC_STREAM, TOPIC_RESULT, DISCARD_PERCENTAGE
 from promptface.utils.logger import Logger
 from promptface.utils.abstract import AbstractOnVeried
 from promptface.utils.folder_utils import createDirectory
@@ -22,11 +22,12 @@ logger = Logger(__name__)
 
 
 class Subscriber(AbstractPromptface):
-    def __init__(self, broker:str, port:int, topic:str):
+    def __init__(self):
         super().__init__()
-        self.broker_ip = broker  # like Raspberry PI IP
-        self.port = port
-        self.topic = topic
+        self.broker_ip = BROKER_IP
+        self.broker_port = BROKER_PORT
+        self.topic_stream = TOPIC_STREAM
+        self.topic_result = TOPIC_RESULT
         self.img = np.zeros((160,160,3), np.uint8)
         self.client = mqtt.Client()
 
@@ -34,26 +35,25 @@ class Subscriber(AbstractPromptface):
         self.client.on_message = self.on_message
 
 
-    def on_connect(self, client, userdata, flags, rc):
+    def on_connect(self, client:mqtt.Client, userdata, flags, rc):
         logger.info("Connected with result code " + str(rc))
-        client.subscribe(self.topic)
+        client.subscribe(self.topic_stream)
 
 
-    def on_message(self, client, userdata, msg):
-        jpg_as_np = np.frombuffer(msg.payload, dtype=np.uint8)
-        # self.image = cv2.imdecode(jpg_as_np, cv2.IMREAD_COLOR)
-        self.image = base64.b64decode(msg.payload)
-        self.image = np.frombuffer(self.image, dtype=np.uint8)
-        self.image = cv2.imdecode(self.image, 1)
+    def on_message(self, client:mqtt.Client, userdata, msg):
+        img = base64.b64decode(msg.payload)
+        npimg = np.frombuffer(img, dtype=np.uint8)
+        self.img = cv2.imdecode(npimg, 1)
         if self.threshold_size == 0:
-            size = self.image.shape[0] * self.image.shape[1]
+            size = self.img.shape[0] * self.img.shape[1]
             self.threshold_size = int(math.sqrt(size*DISCARD_PERCENTAGE/100))
+            logger.info('init threshold size: {}'.format(self.threshold_size))
 
 
     @classmethod
     def app(cls, callback:AbstractOnVeried, *args, **kwargs):
         # set app instance
-        app_instance = cls(RASPI_IP, RASPI_PORT, RASPI_TOPIC)
+        app_instance = cls()
 
 
         # ----- INIT -----
@@ -73,7 +73,7 @@ class Subscriber(AbstractPromptface):
             database_embeddings, identities = load_pkl()
 
             # connect client
-            app_instance.client.connect(app_instance.broker_ip, app_instance.port)
+            app_instance.client.connect(app_instance.broker_ip, app_instance.broker_port)
             app_instance.client.loop_start()
         except Exception as e:
             logger.critical(str(e))

@@ -161,12 +161,12 @@ def __get_embeddings_from_db(representations:List[Dict[str, Any]]):
     # check df
     assert isinstance(df, pd.DataFrame), 'dataframe is None'
     
-    embeddings = df.embedding
+    embeddings = df.embedding # type: ignore
     identities = df.identity
 
     # 재정렬
-    embeddings.index = [i for i in range(len(embeddings.index))]
-    identities.index = [i for i in range(len(identities.index))]
+    embeddings.index = [i for i in range(len(embeddings.index))] # type: ignore
+    identities.index = [i for i in range(len(identities.index))] # type: ignore
     return embeddings, identities
 
 

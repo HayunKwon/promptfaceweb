@@ -6,7 +6,6 @@ process: modify img and return img, target_path, target_distance
 """
 
 # built-in dependencies
-import math
 import time
 from abc import ABC, abstractmethod
 from typing import List, Tuple, Optional
@@ -60,14 +59,8 @@ class AbstractPromptface(ABC):
         self.tic:float = time.time()
         self.target_path:Optional[str] = None
         self.target_distance:Optional[NDArray[np.float64]] = None
-
-        if RASPI_IP == None:
-            self.cap = get_camera()
-            _, img = self.cap.read()
-            size = img.shape[0] * img.shape[1]
-            self.threshold_size = int(math.sqrt(size*DISCARD_PERCENTAGE/100))
-        else:
-            self.threshold_size = 0
+        self.faces_coordinates = []
+        self.threshold_size = 0
 
 
     @classmethod
@@ -109,33 +102,32 @@ class AbstractPromptface(ABC):
         """
         raw_img = img.copy()
 
-        faces_coordinates = []
         if self.freeze is False:
             # [0:1] means get first face.
             # threshold means discard threshold x threshold size face
             # TODO DISCARD_PERCENTAGE to THRESHOLD
-            faces_coordinates = grab_facial_areas(img=img, detector_backend=DETECTOR_BACKEND, threshold=self.threshold_size)[0:1]
+            self.faces_coordinates = grab_facial_areas(img=img, detector_backend=DETECTOR_BACKEND, threshold=self.threshold_size)[0:1]
 
             # we will pass img to analyze modules (identity, demography) and add some illustrations
             # that is why, we will not be able to extract detected face from img clearly
 
-            img = highlight_facial_areas(img=img, faces_coordinates=faces_coordinates)
+            img = highlight_facial_areas(img=img, faces_coordinates=self.faces_coordinates)
             img = countdown_to_freeze(img=img,
-                                    faces_coordinates=faces_coordinates,
+                                    faces_coordinates=self.faces_coordinates,
                                     frame_threshold=FRAME_THRESHOLD,
                                     num_frames_with_faces=self.num_frames_with_faces,)
 
-            self.num_frames_with_faces = self.num_frames_with_faces + 1 if len(faces_coordinates) else 0
+            self.num_frames_with_faces = self.num_frames_with_faces + 1 if len(self.faces_coordinates) else 0
 
             self.freeze = self.num_frames_with_faces > 0 and self.num_frames_with_faces % FRAME_THRESHOLD == 0
             if self.freeze:
                 # add analyze results into img - derive from raw_img
-                img = highlight_facial_areas(img=raw_img, faces_coordinates=faces_coordinates)
+                img = highlight_facial_areas(img=raw_img, faces_coordinates=self.faces_coordinates)
 
                 # if verify, we can get target_path and target_distance
                 # perfom_facial_recognition is customed
                 img = self.perform_facial_recognition(img=img,
-                                                      faces_coordinates=faces_coordinates,
+                                                      faces_coordinates=self.faces_coordinates,
                                                       database_embeddings=database_embeddings,
                                                       df_identities=identities,
                                                       face_overlay=face_overlay,

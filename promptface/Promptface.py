@@ -3,6 +3,8 @@ This module is a modified version of deepface.modules.streaming.analysis functio
 
 app: verify webcam from db
 """
+# built-in dependencies
+import math
 
 # 3rd party dependencies
 import cv2  # for imshow, waitKey, destroyAllWindows
@@ -11,12 +13,12 @@ import cv2  # for imshow, waitKey, destroyAllWindows
 from deepface import DeepFace   # for build_model
 
 # project dependencies
-from promptface.utils.constants import DB_PATH, MODEL_NAME, INFO_FORMAT
+from promptface.utils.constants import DB_PATH, MODEL_NAME, INFO_FORMAT, DISCARD_PERCENTAGE
 from promptface.utils.logger import Logger
 from promptface.utils.abstract import AbstractOnVeried
 from promptface.utils.folder_utils import createDirectory
 from promptface.modules.pkl import load_pkl
-from promptface.modules.streaming import AbstractPromptface
+from promptface.modules.streaming import AbstractPromptface, get_camera
 
 def cli() -> None:
     """
@@ -25,7 +27,16 @@ def cli() -> None:
     import fire
     fire.Fire()
 
+
 class Promptface(AbstractPromptface):
+    def __init__(self):
+        super().__init__()
+        self.cap = get_camera()
+        _, img = self.cap.read()
+        size = img.shape[0] * img.shape[1]
+        self.threshold_size = int(math.sqrt(size*DISCARD_PERCENTAGE/100))
+
+
     @classmethod
     def app(cls, callback:AbstractOnVeried, *args, **kwargs):
         """

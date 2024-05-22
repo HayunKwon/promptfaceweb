@@ -11,8 +11,10 @@ DISCARD_PERCENTAGE: discard face img size per full img size ratio.
 SOURCE: camera number
 TIME_THRESHOLD: freezing time
 FRAME_THRESHOLD: ensure the face when face is detected during N frames
-RASPI_IP: if you use MQTT with raspberrypi, you should set IP.
-RASPI_PORT: default port is 1883.
+BROKER_IP: IP which is using for broker
+BROKER_PORT: default port is 1883.
+TOPIC_STREAM: "home/stream"
+TOPIC_RESULT: "home/result"
 INFO_FORMAT: stream format for log
 """
 # built-in dependencies
@@ -35,9 +37,10 @@ _DEFAULT_DATA = {
     "SOURCE": 0,
     "TIME_THRESHOLD": 5,
     "FRAME_THRESHOLD": 10,
-    "RASPI_IP": None,
-    "RASPI_PORT": 1883,
-    "RASPI_TOPIC": "home/prompt_server",
+    "BROKER_IP": None,
+    "BROKER_PORT": 1883,
+    "TOPIC_STREAM": "home/stream",
+    "TOPIC_RESULT": "home/result"
 }
 
 
@@ -57,9 +60,10 @@ except FileNotFoundError as e:
         "SOURCE": 0,
         "TIME_THRESHOLD": 5,
         "FRAME_THRESHOLD": 10,
-        "RASPI_IP": None,
-        "RASPI_PORT": 1883,
-        "RASPI_TOPIC": "home/prompt_server",
+        "BROKER_IP": None,
+        "BROKER_PORT": 1883,
+        "TOPIC_STREAM": "home/stream",
+        "TOPIC_RESULT": "home/result"
     }
     with open('./constants.json', 'w') as f:
         json.dump(data, f, indent='\t')
@@ -91,9 +95,10 @@ FRAME_THRESHOLD:int = data["FRAME_THRESHOLD"]
 
 
 # MQTT
-RASPI_IP:str = data["RASPI_IP"]
-RASPI_PORT:int = data["RASPI_PORT"]
-RASPI_TOPIC:str = data["RASPI_TOPIC"]
+BROKER_IP:str = data["BROKER_IP"]
+BROKER_PORT:int = data["BROKER_PORT"]
+TOPIC_STREAM:str = data["TOPIC_STREAM"]
+TOPIC_RESULT:str = data["TOPIC_RESULT"]
 
 
 # stream format

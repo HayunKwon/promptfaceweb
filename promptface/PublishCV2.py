@@ -4,27 +4,32 @@ import base64
 
 # 3rd-party dependencies
 import cv2
-import numpy as np
 import paho.mqtt.client as mqtt
 
 # project dependencies
-from promptface.utils.constants import INFO_FORMAT, SOURCE
+from promptface.utils.constants import SOURCE, BROKER_IP, BROKER_PORT, TOPIC_STREAM
 from promptface.utils.logger import Logger
 
 logger = Logger(__name__)
 
 
-def client(broker, port, topic):
+def on_connect(client:mqtt.Client, userdata, flags, rc):
+    logger.info("Connected with result code " + str(rc))
+
+
+def client(broker_ip=BROKER_IP, broker_port=BROKER_PORT, topic_stream=TOPIC_STREAM):
     # Object to capture the frames
     cap = cv2.VideoCapture(SOURCE)
 
     # Phao-MQTT Clinet
     client = mqtt.Client()
+    client.on_connect = on_connect
+
     # Establishing Connection with the Broker
-    client.connect(broker, port)
+    client.connect(broker_ip, broker_port)
     try:
         while True:
-            start = time.time()
+            # start = time.time()
             has_frame, img = cap.read()
             if has_frame is None:
                 raise ValueError('No Camera')
@@ -32,18 +37,14 @@ def client(broker, port, topic):
             # Encoding the Frame
             _, buffer = cv2.imencode('.jpg', img)
             # Converting into encoded bytes
-            jpg_as_text = base64.b64encode(buffer)
+            jpg_as_text = base64.b64encode(buffer) # type: ignore
 
-            # Publishig the Frame on the Topic home/server
-            client.publish(topic, jpg_as_text)
-            end = time.time()
-            t = end - start
-            fps = 1/t
-            logger.info(fps)
-
-            if cv2.waitKey(1) & 0xFF == ord('q'):
-                logger.info(INFO_FORMAT.format('QUIT'))
-                break
+            # Publishig the img on the Topic home/stream
+            client.publish(topic_stream, jpg_as_text)
+            # end = time.time()
+            # t = end - start
+            # fps = 1/t
+            # logger.info(fps)
     except Exception as e:
         cap.release()
         client.disconnect()

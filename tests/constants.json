@@ -8,7 +8,10 @@
 	"SOURCE": 0,
 	"TIME_THRESHOLD": 5,
 	"FRAME_THRESHOLD": 10,
-	"RASPI_IP": "192.168.137.146",
-	"RASPI_PORT": null,
-	"RASPI_TOPIC": null
+	"RASPI_IP": "192.168.137.152",
+	"RASPI_PORT": 1883,
+	"RASPI_TOPIC": "home/prompt_server",
+	"SERVER_IP": "192.168.0.2",
+	"SERVER_PORT": 1833,
+	"SERVER_TOPIC": "home/result"
 }
