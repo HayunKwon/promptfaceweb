@@ -1,5 +1,4 @@
 # built-in dependencies
-import time
 import base64
 
 # 3rd-party dependencies
@@ -27,6 +26,7 @@ def client(broker_ip=BROKER_IP, broker_port=BROKER_PORT, topic_stream=TOPIC_STRE
 
     # Establishing Connection with the Broker
     client.connect(host=broker_ip, port=broker_port)
+    client.loop_start()
     try:
         while True:
             # start = time.time()
@@ -47,5 +47,6 @@ def client(broker_ip=BROKER_IP, broker_port=BROKER_PORT, topic_stream=TOPIC_STRE
             # logger.info(fps)
     except Exception as e:
         cap.release()
+        client.loop_stop()
         client.disconnect()
         logger.info(str(e))

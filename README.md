@@ -15,32 +15,35 @@ from promptface.utils.abstract import AbstractOnVeried
 ```
 
 ## How to use
-
 ### deepface
 You can read README.md from [deepface](https://github.com/serengil/deepface) repository.
 
 ### promptface
 You can use the promptface by running quick_start.py.
 
-#### Quick Start
+#### Quick Start Local .py
 ```py
 # recommend python 3.8.12 version
 # project dependencies
+from promptface.utils.logger import Logger
 from promptface.Promptface import Promptface
 from promptface.utils.abstract import AbstractOnVeried
 
+logger = Logger(__name__)
+
+
 class MyCallback(AbstractOnVeried):
     def on_verify_success(self, app_instance: Promptface, *args, **kwargs):
-        target_path = app_instance.target_path
-        target_distance = app_instance.target_distance
-        print('{} {}'.format(target_path, target_distance))
-        print(f'args: {args}')
-        print(f'kwargs: {kwargs}')
+        # path=str, distance=float, face_coordinate=[(x,y,w,h)]
+        logger.info(f'{app_instance.target_path} {app_instance.target_distance} {app_instance.faces_coordinates}')
+        logger.info(f'args: {args}')
+        logger.info(f'kwargs: {kwargs}')
 
     def on_verify_failed(self, app_instance: Promptface, *args, **kwargs):
-        target_path = app_instance.target_path
-        target_distance = app_instance.target_distance
-        print('{} {}'.format(target_path, target_distance))
+        # path=None, distance=float, face_coordinate=[(0,0,0,0)]
+        logger.info(f'{app_instance.target_path} {app_instance.target_distance} {app_instance.faces_coordinates}')
+        logger.info(f'args: {args}')
+        logger.info(f'kwargs: {kwargs}')
 
 
 # Main
@@ -48,7 +51,7 @@ callback = MyCallback()
 Promptface.app(callback, 'this is args1', 2, key1=(), key2=('value1', 'value2'))
 ```
 
-#### Constants
+#### Constants.json
 ```json
 {
     "DB_PATH": "./ImgDataBase",
@@ -56,12 +59,17 @@ Promptface.app(callback, 'this is args1', 2, key1=(), key2=('value1', 'value2'))
     "DETECTOR_BACKEND": null,
     "ENFORCE_DETECTION": true,
     "ALIGN": true,
+    "DISCARD_PERCENTAGE": 2,
     "SOURCE": 0,
     "TIME_THRESHOLD": 5,
-    "FRAME_THRESHOLD": 10
+    "FRAME_THRESHOLD": 10,
+    "BROKER_IP": null,
+    "BROKER_PORT": 1883,
+    "TOPIC_STREAM": "home/stream",
+    "TOPIC_RESULT": "home/result"
 }
 ```
-If you assign a `null` values in constants.json, it is automatically set to the values in the following table.
+If you assign a `null` values in constants.json, it is automatically set to the values in the following table. But if you want to use `MQTT`, please write BROKER_IP.
 | Constants          |    Contents     |
 | ------------------ | :-------------: |
 | DB_PATH            | "./ImgDataBase" |
@@ -73,6 +81,8 @@ If you assign a `null` values in constants.json, it is automatically set to the 
 | SOURCE             |        0        |
 | TIME_THRESHOLD     |        5        |
 | FRAME_THRESHOLD    |       10        |
+| BROKER_IP          |      null       |
+| TOPIC_STREAM       |  "home/stream"  |
 
 There is options for model and detector.
 ```py
@@ -102,6 +112,61 @@ Some logic has been changed in comparison to deepface
 - The cosine_distance measurement method has been changed to use scikit-learn.
 - Sort df in identity order.
 - You can do something when verifies
+
+#### MQTT
+If you want to use MQTT protocol to use raspberrypi, etc as camera, use quick_raspi, quick_server instead of quick_start.
+
+#### Quick Start RaspberryPI
+```python
+# project dependencies
+from promptface.PublishCV2 import client
+
+
+if __name__ == '__main__':
+    client()
+```
+#### Quick Start Server
+```python
+# 3rd-party dependencies
+from paho.mqtt.client import PayloadType
+
+# project dependencies
+from promptface.utils.logger import Logger
+from promptface.Subscriber import Subscriber
+from promptface.utils.abstract import AbstractOnVeried
+
+logger = Logger(__name__)
+
+TOPIC_ON_VERIFY = 'home/onverify'
+
+
+class MyCallback(AbstractOnVeried):
+    def on_verify_success(self, app_instance: Subscriber, *args, **kwargs):
+        # path=str, distance=float, face_coordinate=[(x,y,w,h)]
+        payload: PayloadType = f'{app_instance.target_path} {app_instance.target_distance} {app_instance.faces_coordinates}'
+        app_instance.client.publish(TOPIC_ON_VERIFY, payload)
+
+        logger.info(f'payload: {payload}')
+        logger.info(f'args: {args}')
+        logger.info(f'kwargs: {kwargs}')
+
+    def on_verify_failed(self, app_instance: Subscriber, *args, **kwargs):
+        # path=None, distance=float, face_coordinate=[(0,0,0,0)]
+        payload: PayloadType = f'{app_instance.target_path} {app_instance.target_distance} {app_instance.faces_coordinates}'
+        app_instance.client.publish(TOPIC_ON_VERIFY, payload)
+
+        logger.info(f'payload: {payload}')
+        logger.info(f'args: {args}')
+        logger.info(f'kwargs: {kwargs}')
+
+
+# Main
+callback = MyCallback()
+Subscriber.app(callback, 'this is args1', 2, key1=(), key2=('value1', 'value2'))
+```
+There is an payload which contains results about verify. This payload is an example, so you can do anything you want.
+
+**I recommand that you type your own server ip in broker_ip.**
 
 ## Diffrence from deepface
 ### face size threshold

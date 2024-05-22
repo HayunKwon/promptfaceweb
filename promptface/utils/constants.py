@@ -39,8 +39,7 @@ _DEFAULT_DATA = {
     "FRAME_THRESHOLD": 10,
     "BROKER_IP": None,
     "BROKER_PORT": 1883,
-    "TOPIC_STREAM": "home/stream",
-    "TOPIC_RESULT": "home/result"
+    "TOPIC_STREAM": "home/stream"
 }
 
 
@@ -62,8 +61,7 @@ except FileNotFoundError as e:
         "FRAME_THRESHOLD": 10,
         "BROKER_IP": None,
         "BROKER_PORT": 1883,
-        "TOPIC_STREAM": "home/stream",
-        "TOPIC_RESULT": "home/result"
+        "TOPIC_STREAM": "home/stream"
     }
     with open('./constants.json', 'w') as f:
         json.dump(data, f, indent='\t')
@@ -98,7 +96,6 @@ FRAME_THRESHOLD:int = data["FRAME_THRESHOLD"]
 BROKER_IP:str = data["BROKER_IP"]
 BROKER_PORT:int = data["BROKER_PORT"]
 TOPIC_STREAM:str = data["TOPIC_STREAM"]
-TOPIC_RESULT:str = data["TOPIC_RESULT"]
 
 
 # stream format

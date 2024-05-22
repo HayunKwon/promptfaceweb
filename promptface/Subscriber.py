@@ -1,6 +1,6 @@
 # built-in dependencies
-import base64
 import math
+import base64
 
 # 3rd-party dependencies
 import cv2
@@ -11,7 +11,7 @@ import paho.mqtt.client as mqtt
 from deepface import DeepFace
 
 # project dependencies
-from promptface.utils.constants import DB_PATH, INFO_FORMAT, MODEL_NAME, BROKER_IP, BROKER_PORT, TOPIC_STREAM, TOPIC_RESULT, DISCARD_PERCENTAGE
+from promptface.utils.constants import DB_PATH, INFO_FORMAT, MODEL_NAME, BROKER_IP, BROKER_PORT, TOPIC_STREAM, DISCARD_PERCENTAGE
 from promptface.utils.logger import Logger
 from promptface.utils.abstract import AbstractOnVeried
 from promptface.utils.folder_utils import createDirectory
@@ -27,7 +27,6 @@ class Subscriber(AbstractPromptface):
         self.broker_ip = BROKER_IP
         self.broker_port = BROKER_PORT
         self.topic_stream = TOPIC_STREAM
-        self.topic_result = TOPIC_RESULT
         self.img = np.zeros((160,160,3), np.uint8)
         self.client = mqtt.Client()
 
@@ -128,6 +127,7 @@ class Subscriber(AbstractPromptface):
 
         # ----- END -----
         # kill open cv things
+        app_instance.client.loop_stop()
         app_instance.client.disconnect()
         cv2.destroyAllWindows()
         logger.info(INFO_FORMAT.format('END'))
