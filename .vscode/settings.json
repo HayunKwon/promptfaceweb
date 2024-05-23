@@ -17,5 +17,6 @@
   ],
   "black-formatter.args": [
     "--line-length=100"
-  ]
+  ],
+  "java.configuration.updateBuildConfiguration": "interactive"
 }
