@@ -90,7 +90,12 @@ class Subscriber(AbstractPromptface):
                 img = app_instance.process(img, database_embeddings, identities, False)
 
                 # show
-                cv2.imshow("img", img)
+                # cv2.imshow("img", img)
+                # Encoding the Frame
+                _, buffer = cv2.imencode('.jpg', img)
+                # Converting into encoded bytes
+                jpg_as_text = base64.b64encode(buffer) # type: ignore
+                app_instance.client.publish('web1', jpg_as_text)
 
 
                 # enter only once when freeze

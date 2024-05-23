@@ -9,7 +9,8 @@ logger = Logger(__name__)
 class MyCallback(AbstractOnVeried):
     def on_verify_success(self, app_instance: Promptface, *args, **kwargs):
         # path=str, distance=float, face_coordinate=[(x,y,w,h)]
-        logger.info(f'{app_instance.target_path} {app_instance.target_distance} {app_instance.faces_coordinates}')
+        # logger.info(f'{app_instance.target_path} {app_instance.target_distance} {app_instance.faces_coordinates}')
+        logger.info(str(app_instance.target_path.split('\\')[-2]))
         logger.info(f'args: {args}')
         logger.info(f'kwargs: {kwargs}')
 
