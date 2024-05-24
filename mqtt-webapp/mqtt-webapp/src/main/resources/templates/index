@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>PromptFACE Finder</title>
+    <style>
+        .image-container {
+            display: flex;
+            justify-content: space-around;
+            align-items: center;
+        }
+        .image-box {
+            margin: 10px;
+        }
+    </style>
+    <script>
+        function fetchImage() {
+            fetch('/image')
+                .then(response => response.blob())
+                .then(blob => {
+                    const url = URL.createObjectURL(blob);
+                    document.getElementById('stream').src = url;
+                });
+        }
+
+        setInterval(fetchImage, 1000);  // 1초마다 이미지 갱신
+    </script>
+</head>
+<body>
+    <h1>MQTT Image Stream</h1>
+    <div class="image-container">
+        <div class="image-box">
+            <h2>Original Image</h2>
+            <img id="stream" src="" alt="Stream">
+        </div>
+        <div class="image-box">
+            <h2>Detected Image</h2>
+            <img id="detected" src="" alt="Detected Image">
+        </div>
+    </div>
+</body>
+</html>
