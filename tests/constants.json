@@ -1,0 +1,15 @@
+{
+	"DB_PATH": "./ImgDataBase",
+	"MODEL_NAME": null,
+	"DETECTOR_BACKEND": null,
+	"ENFORCE_DETECTION": true,
+	"ALIGN": true,
+	"DISCARD_PERCENTAGE": 2,
+	"SOURCE": 0,
+	"TIME_THRESHOLD": 5,
+	"FRAME_THRESHOLD": 10,
+	"BROKER_IP": "192.168.137.1",
+	"BROKER_PORT": 1883,
+	"TOPIC_STREAM": "home/stream",
+	"TOPIC_RESULT": "home/result"
+}
