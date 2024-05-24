@@ -14,9 +14,11 @@ TOPIC_ON_VERIFY = 'home/onverify'
 class MyCallback(AbstractOnVeried):
     def on_verify_success(self, app_instance: Subscriber, *args, **kwargs):
         # path=str, distance=float, face_coordinate=[(x,y,w,h)]
-        payload: PayloadType = f'{app_instance.target_path} {app_instance.target_distance} {app_instance.faces_coordinates}'
+        # payload: PayloadType = f'{app_instance.target_path} {app_instance.target_distance} {app_instance.faces_coordinates}'
+        # target label
+        label = app_instance.target_path.split('\\')[-1].split('.')[0] if app_instance.target_path else None
+        payload: PayloadType = str(label)
         app_instance.client.publish(TOPIC_ON_VERIFY, payload)
-
         logger.info(f'payload: {payload}')
         logger.info(f'args: {args}')
         logger.info(f'kwargs: {kwargs}')
